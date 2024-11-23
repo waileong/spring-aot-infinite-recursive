@@ -1,0 +1,2 @@
+org.springframework.beans.factory.aot.BeanRegistrationAotProcessor=\
+  org.example.springaotinfiniterecursive.CopyOfBeanValidationBeanRegistrationAotProcessor

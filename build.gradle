@@ -1,0 +1,34 @@
+plugins {
+    id 'java'
+    id "org.springframework.boot" version "${spring_boot_version}"
+    id "org.graalvm.buildtools.native" version "${graalvm_buildtools_native_version}"
+}
+
+group = 'org.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Apply Spring Boot BOM for dependency management
+    implementation platform("org.springframework.boot:spring-boot-dependencies:${spring_boot_version}")
+
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

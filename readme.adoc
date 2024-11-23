@@ -1,0 +1,32 @@
+= Spring AOT StackOverflowError Demonstration
+
+This project demonstrates the reproducibility of https://github.com/spring-projects/spring-framework/issues/33936[spring-framework#33936], where running the AOT (Ahead-of-Time) processing results in a StackOverflowError.
+
+== Steps to Reproduce
+
+To reproduce the StackOverflowError, run the following command:
+[source,shell]
+----
+./gradlew aotClasses
+----
+This will trigger the AOT processing and produce the stack overflow error due to infinite recursion.
+
+== Cause of the StackOverflowError
+
+The issue is caused by the https://github.com/spring-projects/spring-framework/commit/357dbc035438e6ca718fd03f9facd6a64b2545c#diff-80196207ba7e6c959263788362347c20acc5e397d6c1bc2423ac90c1ab82e45aR118[commit 357dbc0], which introduced a recursive processAheadOfTime method without a condition to break the recursion. This leads to an infinite recursive loop and eventually a StackOverflowError.
+
+== Suggested Fix
+
+To resolve the issue, add a condition to break the infinite recursive loop by keeping track of the classes that have already been validated.
+[source,java]
+----
+if (validatedClasses.contains(clazz)) {
+  // Break the infinite recursive loop
+  logger.debug("Class {} has already been validated.", clazz.getName());
+  return;
+}
+----
+This approach is demonstrated in the following code snippet from the example project:
+
+https://github.com/waileong/spring-aot-infinite-recursive/blob/main/src/main/java/org/example/springaotinfiniterecursive/CopyOfBeanValidationBeanRegistrationAotProcessor.java#L125[CopyOfBeanValidationBeanRegistrationAotProcessor.java#L125]
+
